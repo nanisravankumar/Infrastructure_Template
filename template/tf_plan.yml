@@ -1,0 +1,30 @@
+  parameters:
+   - name: env
+     displayName: Environment
+   - name: infraType
+     displayName: infraType
+     
+     
+  steps:
+  - script: |       
+      echo "Running validation for"
+      # Print the variables for verification
+      echo "Resource Group: $(resource_group)"
+      echo "Storage Account: $(storage_account)"
+      echo "Container Name: $(container_name)"
+      echo "Service  Name: $(service_connection)"
+  - template: ./steps/tf_init.yml
+    parameters:
+        infraType : ${{parameters.infraType}}
+        env: ${{parameters.env}}
+  
+  - template: ./steps/tf_validate.yml
+
+  - template: ./steps/tf_plan.yml
+    parameters:
+      env: ${{parameters.env}}
+      tf_command: plan
+  
+  
+
+

@@ -1,0 +1,17 @@
+parameters:
+   - name: env
+     displayName: Environment
+   - name: infraType
+     displayName: infraType
+     
+steps:
+
+  - template: ./steps/tf_init.yml
+    parameters:
+        infraType : ${{parameters.infraType}}
+        env: ${{parameters.env}} 
+  
+  - template: ./steps/tf_apply.yml
+    parameters:
+      env: ${{parameters.env}}
+      tf_command: apply

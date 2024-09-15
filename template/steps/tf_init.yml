@@ -1,0 +1,32 @@
+  parameters:
+   - name: infraType
+     displayName: infraType
+   - name: env
+     displayName: Environment
+
+  steps:
+  - task: TerraformInstaller@0
+    displayName: 'Install Terraform'
+    inputs:
+      terraformVersion: '1.6.3'
+  - script: |       
+      echo "Running validation for $(service_connection)"
+  - task: TerraformTaskV4@4
+    displayName: 'Terraform Init'
+    inputs:
+      provider: 'azurerm'
+      command: 'init'
+      workingDirectory: '$(System.DefaultWorkingDirectory)'
+      # backendServiceArm: '$(service_connection)'
+      ${{ if eq(parameters.env, 'dev') }}:
+        backendServiceArm: "IC-Common-NonProduction-Subscription (14ab3967-5405-4155-8149-cfe09d49cd37)"
+      ${{ if eq(parameters.env, 'qa') }}:
+        backendServiceArm: "IC-Common-NonProduction-Subscription (14ab3967-5405-4155-8149-cfe09d49cd37)"
+      ${{ if eq(parameters.env, 'prod') }}:
+        backendServiceArm: "Ael-prod-svc"
+      backendAzureRmResourceGroupName: '$(resource_group)'
+      backendAzureRmStorageAccountName: '$(storage_account)'
+      backendAzureRmContainerName: '$(container_name)'
+      backendAzureRmKey: '${{parameters.infraType}}_terraform.tfstate'
+
+

@@ -1,0 +1,22 @@
+parameters:
+- name: env
+  displayName: Environment
+- name: tf_command
+  displayName: tf_command
+  
+steps:
+  - task: TerraformTaskV1@0
+    displayName: 'plan'
+    inputs:
+      provider: 'azurerm'
+      command: ${{parameters.tf_command}}
+      commandOptions: '-input=false -var-file=./env/"${{parameters.env}}.auto.tfvars" '
+      # environmentServiceNameAzureRM: '${{ variables.service_connection }}'
+      ${{ if eq(parameters.env, 'dev') }}:
+        environmentServiceNameAzureRM: "IC-Common-NonProduction-Subscription (14ab3967-5405-4155-8149-cfe09d49cd37)"
+      ${{ if eq(parameters.env, 'qa') }}:
+        environmentServiceNameAzureRM: "IC-Common-NonProduction-Subscription (14ab3967-5405-4155-8149-cfe09d49cd37)"
+      ${{ if eq(parameters.env, 'prod') }}:
+        environmentServiceNameAzureRM: "Ael-prod-svc"  
+      # environmentServiceNameAzureRM: 'Ael-prod-svc'   
+      workingDirectory: '$(System.DefaultWorkingDirectory)'
